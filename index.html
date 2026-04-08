@@ -13,8 +13,8 @@
        ⚙️  CẤU HÌNH SUPABASE — Thay 2 giá trị này sau khi setup
        ══════════════════════════════════════════════════════════ -->
   <script>
-    const SUPABASE_URL = 'https://wbqgpekqkwykdaidfdlo.supabase.co';   // ← thay
-    const SUPABASE_ANON_KEY = 'sb_publishable_f4eTfM7YsyKJxLQRjAUoNQ_Z4l8AjYI'; // ← thay
+    // const SUPABASE_URL = '';   // ← thay
+    // const SUPABASE_ANON_KEY = ''; // ← thay
   </script>
   <!-- Supabase JS SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1255,7 +1255,9 @@
     // ══════════════════════════════════════════════════════════════════
     //  SUPABASE CLIENT
     // ══════════════════════════════════════════════════════════════════
-    // let supabase = null;
+    const SUPABASE_URL = 'https://wbqgpekqkwykdaidfdlo.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndicWdwZWtxa3d5a2RhaWRmZGxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2MTg2OTksImV4cCI6MjA5MTE5NDY5OX0.1w0pBEY6-8fTXmfOXQ6vy-nzZODrXutETiyaU9g73nk'; // Dán key dài của bạn vào đây
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     let isConfigured = false;
 
     function initSupabase() {
