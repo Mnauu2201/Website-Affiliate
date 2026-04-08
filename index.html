@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deal Xịn - Săn Deal Affiliate</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap"
+    rel="stylesheet">
+
+  <!-- ══════════════════════════════════════════════════════════
+       ⚙️  CẤU HÌNH SUPABASE — Thay 2 giá trị này sau khi setup
+       ══════════════════════════════════════════════════════════ -->
+  <script>
+    const SUPABASE_URL = 'https://wbqgpekqkwykdaidfdlo.supabase.co';   // ← thay
+    const SUPABASE_ANON_KEY = 'sb_publishable_f4eTfM7YsyKJxLQRjAUoNQ_Z4l8AjYI'; // ← thay
+  </script>
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --surface2: #1e1e1e;
+      --border: #2a2a2a;
+      --text: #f0f0f0;
+      --muted: #888;
+      --tiktok: #ff2d55;
+      --shopee: #ff5722;
+      --accent: #ff6b35;
+      --gold: #ffd700;
+      --green: #22c55e;
+      --radius: 14px;
+      --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13, 13, 13, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      gap: 16px;
+    }
+
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .search-bar {
+      flex: 1;
+      max-width: 480px;
+      position: relative;
+    }
+
+    .search-bar input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 50px;
+      padding: 9px 18px 9px 40px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .search-bar input:focus {
+      border-color: var(--accent);
+    }
+
+    .search-bar input::placeholder {
+      color: var(--muted);
+    }
+
+    .search-bar .ico {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Admin button — ẩn mặc định, chỉ hiện khi đăng nhập */
+    .admin-btn {
+      display: none;
+      /* ẨN VỚI MỌI NGƯỜI */
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .admin-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .admin-btn.visible {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .logout-btn {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      transition: all 0.2s;
+    }
+
+    .logout-btn:hover {
+      border-color: var(--tiktok);
+      color: var(--tiktok);
+    }
+
+    .logout-btn.visible {
+      display: inline-flex;
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 52px 20px 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 107, 53, 0.12);
+      border: 1px solid rgba(255, 107, 53, 0.3);
+      border-radius: 50px;
+      padding: 5px 14px;
+      font-size: 0.78rem;
+      color: var(--accent);
+      margin-bottom: 18px;
+      font-weight: 500;
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(1.8rem, 5vw, 3.2rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin-bottom: 12px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent), var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 0 auto 28px;
+      line-height: 1.6;
+    }
+
+    /* FILTERS */
+    .filters {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 0 20px 28px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .filter-btn {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      border-radius: 50px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      border-color: var(--accent);
+      color: var(--text);
+      background: rgba(255, 107, 53, 0.1);
+    }
+
+    .filter-btn.active {
+      color: var(--accent);
+    }
+
+    .filter-btn .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .dot-all {
+      background: linear-gradient(135deg, var(--tiktok), var(--shopee));
+    }
+
+    .dot-tiktok {
+      background: var(--tiktok);
+    }
+
+    .dot-shopee {
+      background: var(--shopee);
+    }
+
+    /* SORT BAR */
+    .sort-bar {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .count-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .count-label strong {
+      color: var(--text);
+    }
+
+    .sort-select {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* GRID */
+    .products-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px 60px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media(max-width:480px) {
+      .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+    }
+
+    /* PRODUCT CARD */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow);
+      border-color: rgba(255, 107, 53, 0.3);
+    }
+
+    .card-img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      display: block;
+      background: var(--surface2);
+    }
+
+    .card-img-placeholder {
+      width: 100%;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--surface2);
+      font-size: 2.5rem;
+    }
+
+    .card-platform {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 50px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      backdrop-filter: blur(10px);
+    }
+
+    .platform-tiktok {
+      background: rgba(255, 45, 85, 0.85);
+      color: white;
+    }
+
+    .platform-shopee {
+      background: rgba(255, 87, 34, 0.85);
+      color: white;
+    }
+
+    .card-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: var(--gold);
+      color: #000;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 0.68rem;
+      font-weight: 700;
+    }
+
+    .card-body {
+      padding: 12px;
+    }
+
+    .card-category {
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 5px;
+    }
+
+    .card-title {
+      font-size: 0.88rem;
+      font-weight: 500;
+      line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .card-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .price-now {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--accent);
+    }
+
+    .price-old {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .price-discount {
+      font-size: 0.72rem;
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .card-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 9px;
+      border-radius: 8px;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+      text-decoration: none;
+    }
+
+    .card-cta:hover {
+      opacity: 0.85;
+    }
+
+    .cta-tiktok {
+      background: var(--tiktok);
+      color: white;
+    }
+
+    .cta-shopee {
+      background: var(--shopee);
+      color: white;
+    }
+
+    /* LOADING SKELETON */
+    .skeleton-grid {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 16px 60px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 16px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .skeleton-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .skeleton-img {
+      width: 100%;
+      aspect-ratio: 1;
+      background: linear-gradient(90deg, var(--surface2) 25%, #2a2a2a 50%, var(--surface2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+    }
+
+    .skeleton-body {
+      padding: 12px;
+    }
+
+    .skeleton-line {
+      height: 10px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, var(--surface2) 25%, #2a2a2a 50%, var(--surface2) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      margin-bottom: 8px;
+    }
+
+    .skeleton-line.short {
+      width: 60%;
+    }
+
+    .skeleton-line.medium {
+      width: 80%;
+    }
+
+    @keyframes shimmer {
+      to {
+        background-position: -200% 0;
+      }
+    }
+
+    /* EMPTY STATE */
+    .empty-state {
+      grid-column: 1/-1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .empty-state .icon {
+      font-size: 3rem;
+      margin-bottom: 12px;
+    }
+
+    .empty-state p {
+      font-size: 0.95rem;
+    }
+
+    /* MODAL OVERLAY */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    /* MODAL */
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 540px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px;
+      transform: translateY(20px);
+      transition: transform 0.25s;
+      position: relative;
+    }
+
+    .modal-overlay.open .modal {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+
+    .modal-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+    }
+
+    .modal-close {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .modal-close:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    /* FORM */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.82rem;
+      color: var(--muted);
+      margin-bottom: 6px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    input[type="text"],
+    input[type="url"],
+    input[type="number"],
+    input[type="password"],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 14px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--accent);
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: var(--muted);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .platform-select-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .platform-option {
+      position: relative;
+    }
+
+    .platform-option input[type="radio"] {
+      position: absolute;
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .platform-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .platform-option input:checked+.platform-label.tiktok-label {
+      border-color: var(--tiktok);
+      background: rgba(255, 45, 85, 0.1);
+      color: var(--tiktok);
+    }
+
+    .platform-option input:checked+.platform-label.shopee-label {
+      border-color: var(--shopee);
+      background: rgba(255, 87, 34, 0.1);
+      color: var(--shopee);
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: linear-gradient(135deg, var(--accent), #ff8c42);
+      border: none;
+      color: white;
+      border-radius: 10px;
+      padding: 12px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.85;
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      border-radius: 10px;
+      padding: 12px 20px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--text);
+      color: var(--text);
+    }
+
+    /* ADMIN LIST */
+    .admin-list {
+      margin-top: 24px;
+      border-top: 1px solid var(--border);
+      padding-top: 20px;
+    }
+
+    .admin-list-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 14px;
+    }
+
+    .admin-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .admin-item:last-child {
+      border-bottom: none;
+    }
+
+    .admin-item-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .admin-item-name {
+      font-size: 0.88rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 2px;
+    }
+
+    .admin-item-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+      display: flex;
+      gap: 8px;
+    }
+
+    .admin-item-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .btn-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: 7px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      transition: all 0.15s;
+    }
+
+    .btn-icon:hover {
+      color: var(--text);
+      border-color: var(--text);
+    }
+
+    .btn-icon.edit:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .btn-icon.delete:hover {
+      color: var(--tiktok);
+      border-color: var(--tiktok);
+    }
+
+    /* PRODUCT MODAL */
+    .product-modal .modal {
+      max-width: 420px;
+    }
+
+    .prod-modal-img {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-bottom: 16px;
+      background: var(--surface2);
+    }
+
+    .prod-modal-platform {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .prod-modal-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      line-height: 1.35;
+    }
+
+    .prod-modal-desc {
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .prod-modal-prices {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .prod-modal-price-now {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+    .prod-modal-price-old {
+      font-size: 1rem;
+      color: var(--muted);
+      text-decoration: line-through;
+    }
+
+    .prod-modal-cta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .prod-modal-cta:hover {
+      opacity: 0.85;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: 0.88rem;
+      z-index: 300;
+      transition: transform 0.3s ease;
+      white-space: nowrap;
+      box-shadow: var(--shadow);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* LOGIN MODAL */
+    .pw-modal .modal {
+      max-width: 360px;
+    }
+
+    .pw-modal p {
+      color: var(--muted);
+      font-size: 0.88rem;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    /* SUPABASE SETUP BANNER */
+    .setup-banner {
+      display: none;
+      background: rgba(255, 107, 53, 0.1);
+      border: 1px solid rgba(255, 107, 53, 0.4);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin: 20px auto;
+      max-width: 1200px;
+      position: relative;
+      z-index: 1;
+      font-size: 0.88rem;
+      line-height: 1.6;
+      color: var(--text);
+    }
+
+    .setup-banner.show {
+      display: block;
+    }
+
+    .setup-banner strong {
+      color: var(--accent);
+    }
+
+    .setup-banner code {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 0.82rem;
+      font-family: monospace;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      padding: 32px 20px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.8rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* SCROLLBAR */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    @media(max-width:600px) {
+      .hero {
+        padding: 36px 16px 24px;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .header-inner {
+        gap: 10px;
+      }
+
+      .search-bar input {
+        font-size: 0.82rem;
+      }
+
+      .admin-btn span {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">🔥 Deal Xịn</div>
+      <div class="search-bar">
+        <span class="ico">🔍</span>
+        <input type="text" id="searchInput" placeholder="Tìm sản phẩm...">
+      </div>
+      <div class="header-actions">
+        <!-- Nút quản lý — ẨN mặc định, chỉ hiện sau khi đăng nhập -->
+        <button class="admin-btn" id="adminBtn" onclick="openAdminModal()">⚙️ <span>Quản lý</span></button>
+        <button class="logout-btn" id="logoutBtn" onclick="adminLogout()" title="Đăng xuất">🚪</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- SETUP BANNER (chỉ hiện khi chưa cấu hình Supabase) -->
+  <div class="setup-banner" id="setupBanner">
+    ⚠️ <strong>Chưa cấu hình Supabase.</strong> Mở file <code>index.html</code>, tìm dòng <code>SUPABASE_URL</code> và
+    <code>SUPABASE_ANON_KEY</code> và điền thông tin từ project Supabase của bạn vào. Xem hướng dẫn trong file
+    <code>HUONG_DAN_SETUP.md</code>.
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-tag">✨ Affiliate Store</div>
+    <h1>Săn Deal <span>Siêu Xịn</span><br>Giá Tốt Mỗi Ngày</h1>
+    <p>Tổng hợp sản phẩm chất lượng từ TikTok Shop & Shopee với giá ưu đãi đặc biệt</p>
+  </section>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <button class="filter-btn active" onclick="setFilter('all',this)"><span class="dot dot-all"></span> Tất cả</button>
+    <button class="filter-btn" onclick="setFilter('tiktok',this)"><span class="dot dot-tiktok"></span> TikTok
+      Shop</button>
+    <button class="filter-btn" onclick="setFilter('shopee',this)"><span class="dot dot-shopee"></span> Shopee</button>
+  </div>
+
+  <!-- SORT BAR -->
+  <div class="sort-bar">
+    <div class="count-label">Hiển thị <strong id="countLabel">0</strong> sản phẩm</div>
+    <select class="sort-select" id="sortSelect" onchange="renderProducts()">
+      <option value="newest">Mới nhất</option>
+      <option value="price_asc">Giá tăng dần</option>
+      <option value="price_desc">Giá giảm dần</option>
+      <option value="discount">Khuyến mãi cao</option>
+    </select>
+  </div>
+
+  <!-- SKELETON LOADING -->
+  <div class="skeleton-grid" id="skeletonGrid">
+    <div class="skeleton-card" style="display:none" id="skeletonTemplate">
+      <div class="skeleton-img"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line medium"></div>
+        <div class="skeleton-line short"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GRID -->
+  <main class="products-grid" id="productsGrid"></main>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>🔥 Deal Xịn — Tổng hợp sản phẩm affiliate chất lượng</p>
+    <p style="margin-top:6px;opacity:0.5">Khi mua qua link, bạn hỗ trợ chúng tôi mà không tốn thêm chi phí ❤️</p>
+  </footer>
+
+  <!-- ── MODAL: ĐĂNG NHẬP ADMIN ── -->
+  <div class="modal-overlay pw-modal" id="pwModal">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">🔐 Đăng nhập quản trị</div>
+        <button class="modal-close" onclick="closePwModal()">✕</button>
+      </div>
+      <p>Nhập email và mật khẩu Supabase của bạn.</p>
+      <div class="form-group">
+        <label>Email</label>
+        <input type="text" id="pwEmail" placeholder="admin@email.com" autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label>Mật khẩu</label>
+        <input type="password" id="pwInput" placeholder="••••••••" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div id="loginError" style="color:var(--tiktok);font-size:0.82rem;margin-bottom:12px;display:none"></div>
+      <div class="form-actions">
+        <button class="btn-secondary" onclick="closePwModal()">Huỷ</button>
+        <button class="btn-primary" id="loginBtn" onclick="doLogin()">Đăng nhập</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: QUẢN LÝ SẢN PHẨM ── -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal" style="max-width:580px">
+      <div class="modal-header">
+        <div class="modal-title" id="adminModalTitle">➕ Thêm sản phẩm</div>
+        <button class="modal-close" onclick="closeAdminModal()">✕</button>
+      </div>
+
+      <input type="hidden" id="editId">
+
+      <label>Nền tảng</label>
+      <div class="platform-select-group">
+        <div class="platform-option">
+          <input type="radio" name="platform" id="platTiktok" value="tiktok" checked>
+          <label for="platTiktok" class="platform-label tiktok-label">🎵 TikTok Shop</label>
+        </div>
+        <div class="platform-option">
+          <input type="radio" name="platform" id="platShopee" value="shopee">
+          <label for="platShopee" class="platform-label shopee-label">🛒 Shopee</label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Tên sản phẩm *</label>
+        <input type="text" id="f_name" placeholder="VD: Son dưỡng môi Laneige...">
+      </div>
+      <div class="form-group">
+        <label>Link affiliate *</label>
+        <input type="url" id="f_link" placeholder="https://...">
+      </div>
+      <div class="form-group">
+        <label>Link ảnh sản phẩm</label>
+        <input type="url" id="f_img" placeholder="https://... (để trống dùng emoji)">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Giá bán (₫) *</label>
+          <input type="number" id="f_price" placeholder="150000">
+        </div>
+        <div class="form-group">
+          <label>Giá gốc (₫)</label>
+          <input type="number" id="f_oldprice" placeholder="250000">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Danh mục</label>
+          <select id="f_cat">
+            <option value="Thời trang">Thời trang</option>
+            <option value="Làm đẹp">Làm đẹp</option>
+            <option value="Điện tử">Điện tử</option>
+            <option value="Gia dụng">Gia dụng</option>
+            <option value="Sức khoẻ">Sức khoẻ</option>
+            <option value="Thực phẩm">Thực phẩm</option>
+            <option value="Khác">Khác</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Badge (tuỳ chọn)</label>
+          <input type="text" id="f_badge" placeholder="HOT, -50%, Best">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Mô tả ngắn</label>
+        <textarea id="f_desc" placeholder="Mô tả nhanh về sản phẩm..."></textarea>
+      </div>
+      <div class="form-group">
+        <label>Emoji đại diện (nếu không có ảnh)</label>
+        <input type="text" id="f_emoji" placeholder="🛍️">
+      </div>
+
+      <div class="form-actions">
+        <button class="btn-secondary" onclick="closeAdminModal()">Huỷ</button>
+        <button class="btn-primary" id="saveBtn" onclick="saveProduct()">💾 Lưu sản phẩm</button>
+      </div>
+
+      <div class="admin-list">
+        <div class="admin-list-title">📦 Sản phẩm hiện có (<span id="adminCount">0</span>)</div>
+        <div id="adminList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── MODAL: XEM SẢN PHẨM ── -->
+  <div class="modal-overlay product-modal" id="productModal">
+    <div class="modal" style="max-width:420px">
+      <div class="modal-header">
+        <div class="modal-title"></div>
+        <button class="modal-close" onclick="closeProductModal()">✕</button>
+      </div>
+      <div id="productModalContent"></div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ══════════════════════════════════════════════════════════════════
+    //  SUPABASE CLIENT
+    // ══════════════════════════════════════════════════════════════════
+    let supabase = null;
+    let isConfigured = false;
+
+    function initSupabase() {
+      // Kiểm tra đã cấu hình chưa
+      if (SUPABASE_URL.includes('XXXXX') || SUPABASE_ANON_KEY.includes('XXXXX')) {
+        document.getElementById('setupBanner').classList.add('show');
+        isConfigured = false;
+        return;
+      }
+      try {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        isConfigured = true;
+      } catch (e) {
+        document.getElementById('setupBanner').classList.add('show');
+        isConfigured = false;
+      }
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  STATE
+    // ══════════════════════════════════════════════════════════════════
+    let products = [];
+    let currentFilter = 'all';
+    let editingId = null;
+    let isAdminLoggedIn = false;
+
+    // ══════════════════════════════════════════════════════════════════
+    //  AUTH — Supabase Email/Password
+    // ══════════════════════════════════════════════════════════════════
+
+    // Kiểm tra session hiện tại (tự đăng nhập lại nếu còn session)
+    async function checkSession() {
+      if (!isConfigured) return;
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        onAdminLoggedIn();
+      }
+    }
+
+    async function doLogin() {
+      if (!isConfigured) { showToast('⚠️ Chưa cấu hình Supabase!'); return; }
+
+      const email = document.getElementById('pwEmail').value.trim();
+      const password = document.getElementById('pwInput').value;
+      const errEl = document.getElementById('loginError');
+      const btn = document.getElementById('loginBtn');
+
+      if (!email || !password) { errEl.textContent = 'Nhập đủ email và mật khẩu.'; errEl.style.display = 'block'; return; }
+
+      btn.textContent = 'Đang đăng nhập...';
+      btn.disabled = true;
+      errEl.style.display = 'none';
+
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+      btn.textContent = 'Đăng nhập';
+      btn.disabled = false;
+
+      if (error) {
+        errEl.textContent = '❌ ' + (error.message === 'Invalid login credentials' ? 'Sai email hoặc mật khẩu.' : error.message);
+        errEl.style.display = 'block';
+      } else {
+        closePwModal();
+        onAdminLoggedIn();
+      }
+    }
+
+    function onAdminLoggedIn() {
+      isAdminLoggedIn = true;
+      document.getElementById('adminBtn').classList.add('visible');
+      document.getElementById('logoutBtn').classList.add('visible');
+      showToast('✅ Đã đăng nhập quản trị!');
+    }
+
+    async function adminLogout() {
+      if (!isConfigured) return;
+      await supabase.auth.signOut();
+      isAdminLoggedIn = false;
+      document.getElementById('adminBtn').classList.remove('visible');
+      document.getElementById('logoutBtn').classList.remove('visible');
+      closeAdminModal();
+      showToast('👋 Đã đăng xuất');
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  LOAD SẢN PHẨM TỪ SUPABASE (chỉ đọc — public)
+    // ══════════════════════════════════════════════════════════════════
+    async function loadProducts() {
+      showSkeleton(6);
+
+      if (!isConfigured) {
+        // Demo data khi chưa setup
+        products = getDemoProducts();
+        hideSkeleton();
+        renderProducts();
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      hideSkeleton();
+
+      if (error) {
+        showToast('❌ Lỗi tải sản phẩm: ' + error.message);
+        products = [];
+      } else {
+        products = data || [];
+      }
+      renderProducts();
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  CRUD — CHỈ ADMIN MỚI GỌI ĐƯỢC (Supabase RLS bảo vệ phía server)
+    // ══════════════════════════════════════════════════════════════════
+    async function saveProduct() {
+      if (!isAdminLoggedIn) { showToast('❌ Không có quyền!'); return; }
+
+      const name = document.getElementById('f_name').value.trim();
+      const link = document.getElementById('f_link').value.trim();
+      const price = parseFloat(document.getElementById('f_price').value);
+
+      if (!name) { showToast('⚠️ Nhập tên sản phẩm!'); return; }
+      if (!link) { showToast('⚠️ Nhập link affiliate!'); return; }
+      if (!price || price <= 0) { showToast('⚠️ Nhập giá hợp lệ!'); return; }
+
+      const platform = document.querySelector('input[name="platform"]:checked').value;
+      const payload = {
+        platform,
+        name,
+        link,
+        img: document.getElementById('f_img').value.trim(),
+        price,
+        old_price: parseFloat(document.getElementById('f_oldprice').value) || null,
+        category: document.getElementById('f_cat').value,
+        badge: document.getElementById('f_badge').value.trim(),
+        description: document.getElementById('f_desc').value.trim(),
+        emoji: document.getElementById('f_emoji').value.trim() || (platform === 'tiktok' ? '🎵' : '🛒'),
+      };
+
+      const btn = document.getElementById('saveBtn');
+      btn.textContent = 'Đang lưu...';
+      btn.disabled = true;
+
+      let error;
+      if (editingId) {
+        ({ error } = await supabase.from('products').update(payload).eq('id', editingId));
+      } else {
+        ({ error } = await supabase.from('products').insert([payload]));
+      }
+
+      btn.textContent = '💾 Lưu sản phẩm';
+      btn.disabled = false;
+
+      if (error) {
+        showToast('❌ Lỗi: ' + error.message);
+        return;
+      }
+
+      showToast(editingId ? '✅ Đã cập nhật sản phẩm!' : '✅ Đã thêm sản phẩm!');
+      clearForm();
+      document.getElementById('adminModalTitle').textContent = '➕ Thêm sản phẩm';
+      await loadProducts();
+      renderAdminList();
+    }
+
+    async function deleteProduct(id) {
+      if (!isAdminLoggedIn) { showToast('❌ Không có quyền!'); return; }
+      if (!confirm('Xoá sản phẩm này?')) return;
+
+      const { error } = await supabase.from('products').delete().eq('id', id);
+      if (error) { showToast('❌ Lỗi xoá: ' + error.message); return; }
+
+      showToast('🗑️ Đã xoá sản phẩm');
+      await loadProducts();
+      renderAdminList();
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  UI — FILTERS & RENDER
+    // ══════════════════════════════════════════════════════════════════
+    function setFilter(f, btn) {
+      currentFilter = f;
+      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderProducts();
+    }
+
+    function getFilteredProducts() {
+      let list = [...products];
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      if (q) list = list.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q));
+      if (currentFilter !== 'all') list = list.filter(p => p.platform === currentFilter);
+
+      const sort = document.getElementById('sortSelect').value;
+      if (sort === 'price_asc') list.sort((a, b) => a.price - b.price);
+      else if (sort === 'price_desc') list.sort((a, b) => b.price - a.price);
+      else if (sort === 'discount') list.sort((a, b) => {
+        const da = a.old_price ? (a.old_price - a.price) / a.old_price : 0;
+        const db = b.old_price ? (b.old_price - b.price) / b.old_price : 0;
+        return db - da;
+      });
+      // newest = default (đã sort từ Supabase)
+      return list;
+    }
+
+    function formatPrice(n) { return Number(n).toLocaleString('vi-VN') + '₫'; }
+
+    function getDiscount(p) {
+      if (!p.old_price || p.old_price <= p.price) return '';
+      return '-' + Math.round((p.old_price - p.price) / p.old_price * 100) + '%';
+    }
+
+    function renderProducts() {
+      const grid = document.getElementById('productsGrid');
+      const list = getFilteredProducts();
+      document.getElementById('countLabel').textContent = list.length;
+
+      if (list.length === 0) {
+        grid.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>Chưa có sản phẩm nào.</p></div>`;
+        return;
+      }
+
+      grid.innerHTML = list.map(p => {
+        const disc = getDiscount(p);
+        const isTiktok = p.platform === 'tiktok';
+        return `
+        <div class="card" onclick="openProductModal('${p.id}')">
+          ${p.img ? `<img class="card-img" src="${p.img}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+          <div class="card-img-placeholder" style="${p.img ? 'display:none' : ''}">${p.emoji || (isTiktok ? '🎵' : '🛒')}</div>
+          <div class="card-platform ${isTiktok ? 'platform-tiktok' : 'platform-shopee'}">
+            ${isTiktok ? '🎵 TikTok' : '🛒 Shopee'}
+          </div>
+          ${p.badge ? `<div class="card-badge">${p.badge}</div>` : ''}
+          <div class="card-body">
+            <div class="card-category">${p.category}</div>
+            <div class="card-title">${p.name}</div>
+            <div class="card-price-row">
+              <span class="price-now">${formatPrice(p.price)}</span>
+              ${p.old_price ? `<span class="price-old">${formatPrice(p.old_price)}</span>` : ''}
+              ${disc ? `<span class="price-discount">${disc}</span>` : ''}
+            </div>
+            <a href="${p.link}" target="_blank" rel="noopener" class="card-cta ${isTiktok ? 'cta-tiktok' : 'cta-shopee'}" onclick="event.stopPropagation()">
+              ${isTiktok ? '🎵' : '🛒'} Mua ngay
+            </a>
+          </div>
+        </div>
+      `;
+      }).join('');
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  MODALS
+    // ══════════════════════════════════════════════════════════════════
+    function openProductModal(id) {
+      const p = products.find(x => String(x.id) === String(id));
+      if (!p) return;
+      const isTiktok = p.platform === 'tiktok';
+      const disc = getDiscount(p);
+      document.getElementById('productModalContent').innerHTML = `
+      ${p.img
+          ? `<img class="prod-modal-img" src="${p.img}" alt="${p.name}" onerror="this.style.display='none'">`
+          : `<div class="prod-modal-img" style="display:flex;align-items:center;justify-content:center;font-size:4rem">${p.emoji || '🛍️'}</div>`
+        }
+      <div class="prod-modal-platform ${isTiktok ? 'platform-tiktok' : 'platform-shopee'}">
+        ${isTiktok ? '🎵 TikTok Shop' : '🛒 Shopee'}
+      </div>
+      <div class="prod-modal-title">${p.name}</div>
+      ${p.description ? `<div class="prod-modal-desc">${p.description}</div>` : ''}
+      <div class="prod-modal-prices">
+        <span class="prod-modal-price-now">${formatPrice(p.price)}</span>
+        ${p.old_price ? `<span class="prod-modal-price-old">${formatPrice(p.old_price)}</span>` : ''}
+        ${disc ? `<span class="price-discount" style="font-size:1rem">${disc}</span>` : ''}
+      </div>
+      <a href="${p.link}" target="_blank" rel="noopener" class="prod-modal-cta ${isTiktok ? 'cta-tiktok' : 'cta-shopee'}">
+        ${isTiktok ? '🎵' : '🛒'} Mua ngay trên ${isTiktok ? 'TikTok Shop' : 'Shopee'}
+      </a>
+    `;
+      document.getElementById('productModal').classList.add('open');
+    }
+    function closeProductModal() { document.getElementById('productModal').classList.remove('open'); }
+
+    // Login modal — MỞ BẰNG KONAMI CODE (↑↑↓↓←→←→BA) hoặc triple-click logo
+    function openPwModal() {
+      document.getElementById('pwEmail').value = '';
+      document.getElementById('pwInput').value = '';
+      document.getElementById('loginError').style.display = 'none';
+      document.getElementById('pwModal').classList.add('open');
+      setTimeout(() => document.getElementById('pwEmail').focus(), 200);
+    }
+    function closePwModal() { document.getElementById('pwModal').classList.remove('open'); }
+
+    function openAdminModal() {
+      if (!isAdminLoggedIn) return;
+      editingId = null;
+      document.getElementById('adminModalTitle').textContent = '➕ Thêm sản phẩm';
+      clearForm();
+      renderAdminList();
+      document.getElementById('adminModal').classList.add('open');
+    }
+    function closeAdminModal() { document.getElementById('adminModal').classList.remove('open'); }
+
+    function renderAdminList() {
+      const list = [...products];
+      document.getElementById('adminCount').textContent = list.length;
+      document.getElementById('adminList').innerHTML = list.length === 0
+        ? '<p style="color:var(--muted);font-size:0.85rem">Chưa có sản phẩm nào.</p>'
+        : list.map(p => `
+        <div class="admin-item">
+          <div class="admin-item-info">
+            <div class="admin-item-name">${p.emoji || ''} ${p.name}</div>
+            <div class="admin-item-meta">
+              <span>${p.platform === 'tiktok' ? '🎵' : '🛒'} ${p.platform}</span>
+              <span>${formatPrice(p.price)}</span>
+              <span>${p.category}</span>
+            </div>
+          </div>
+          <div class="admin-item-actions">
+            <button class="btn-icon edit" onclick="editProduct('${p.id}')" title="Sửa">✏️</button>
+            <button class="btn-icon delete" onclick="deleteProduct('${p.id}')" title="Xóa">🗑️</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function editProduct(id) {
+      const p = products.find(x => String(x.id) === String(id));
+      if (!p) return;
+      editingId = p.id;
+      document.getElementById('adminModalTitle').textContent = '✏️ Sửa sản phẩm';
+      document.getElementById('editId').value = id;
+      document.getElementById('f_name').value = p.name;
+      document.getElementById('f_link').value = p.link;
+      document.getElementById('f_img').value = p.img || '';
+      document.getElementById('f_price').value = p.price;
+      document.getElementById('f_oldprice').value = p.old_price || '';
+      document.getElementById('f_cat').value = p.category;
+      document.getElementById('f_badge').value = p.badge || '';
+      document.getElementById('f_desc').value = p.description || '';
+      document.getElementById('f_emoji').value = p.emoji || '';
+      document.querySelector(`input[name="platform"][value="${p.platform}"]`).checked = true;
+      document.getElementById('f_name').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function clearForm() {
+      ['f_name', 'f_link', 'f_img', 'f_price', 'f_oldprice', 'f_badge', 'f_desc', 'f_emoji'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
+      document.getElementById('f_cat').value = 'Thời trang';
+      document.getElementById('platTiktok').checked = true;
+      document.getElementById('editId').value = '';
+      editingId = null;
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  SKELETON LOADING
+    // ══════════════════════════════════════════════════════════════════
+    function showSkeleton(n) {
+      const grid = document.getElementById('skeletonGrid');
+      const tpl = document.getElementById('skeletonTemplate');
+      grid.innerHTML = '';
+      for (let i = 0; i < n; i++) {
+        const clone = tpl.cloneNode(true);
+        clone.style.display = 'block';
+        clone.id = '';
+        grid.appendChild(clone);
+      }
+      document.getElementById('productsGrid').innerHTML = '';
+    }
+    function hideSkeleton() {
+      document.getElementById('skeletonGrid').innerHTML = '';
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  TOAST
+    // ══════════════════════════════════════════════════════════════════
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  KONAMI CODE để mở login (↑↑↓↓←→←→ba)
+    //  Người dùng bình thường không biết tổ hợp này
+    // ══════════════════════════════════════════════════════════════════
+    const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
+    let konamiIdx = 0;
+    document.addEventListener('keydown', e => {
+      if (e.key === KONAMI[konamiIdx]) {
+        konamiIdx++;
+        if (konamiIdx === KONAMI.length) { konamiIdx = 0; if (!isAdminLoggedIn) openPwModal(); }
+      } else {
+        konamiIdx = 0;
+      }
+    });
+
+    // Triple-click logo để mở login (mobile friendly)
+    let logoClicks = 0, logoTimer = null;
+    document.querySelector('.logo').addEventListener('click', () => {
+      logoClicks++;
+      clearTimeout(logoTimer);
+      logoTimer = setTimeout(() => { logoClicks = 0; }, 800);
+      if (logoClicks >= 3) { logoClicks = 0; if (!isAdminLoggedIn) openPwModal(); }
+    });
+
+    // ══════════════════════════════════════════════════════════════════
+    //  DEMO DATA (dùng khi chưa setup Supabase)
+    // ══════════════════════════════════════════════════════════════════
+    function getDemoProducts() {
+      return [
+        { id: 1, platform: 'tiktok', name: 'Son dưỡng môi Laneige Lip Sleeping Mask', link: 'https://tiktok.com', img: '', emoji: '💄', price: 189000, old_price: 350000, category: 'Làm đẹp', badge: 'HOT', description: 'Son dưỡng môi ban đêm cực hot, giúp môi mềm mịn qua đêm.' },
+        { id: 2, platform: 'shopee', name: 'Tai nghe không dây Bluetooth 5.3 ANC', link: 'https://shopee.vn', img: '', emoji: '🎧', price: 299000, old_price: 599000, category: 'Điện tử', badge: '-50%', description: 'Chống ồn chủ động, bass mạnh, pin 30h. Deal siêu hời!' },
+        { id: 3, platform: 'tiktok', name: 'Áo thun Oversized unisex form rộng', link: 'https://tiktok.com', img: '', emoji: '👕', price: 89000, old_price: 150000, category: 'Thời trang', badge: '', description: 'Vải cotton 100%, thoáng mát, nhiều màu lựa chọn.' },
+        { id: 4, platform: 'shopee', name: 'Serum Vitamin C làm sáng da', link: 'https://shopee.vn', img: '', emoji: '✨', price: 129000, old_price: 220000, category: 'Làm đẹp', badge: 'NEW', description: 'Giảm thâm, làm sáng da, chống oxy hoá hiệu quả.' },
+      ];
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  CLOSE MODAL ON OUTSIDE CLICK
+    // ══════════════════════════════════════════════════════════════════
+    document.getElementById('productModal').addEventListener('click', function (e) { if (e.target === this) closeProductModal(); });
+    document.getElementById('adminModal').addEventListener('click', function (e) { if (e.target === this) closeAdminModal(); });
+    document.getElementById('pwModal').addEventListener('click', function (e) { if (e.target === this) closePwModal(); });
+    document.getElementById('searchInput').addEventListener('input', renderProducts);
+
+    // ══════════════════════════════════════════════════════════════════
+    //  INIT
+    // ══════════════════════════════════════════════════════════════════
+    initSupabase();
+    checkSession();
+    loadProducts();
+  </script>
+</body>
+
+</html>
